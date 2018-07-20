@@ -1,0 +1,569 @@
+<!-- Created by 🇮🇷 M N -->
+
+<!--
+
+Hacker Terminal
+
+2018/06/14
+
+2018/06/15 Winner of the contest
+Thanks to all
+
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Hacker Terminal</title>
+        <style>
+            /* Created by 🇮🇷 M N */
+body {
+    background: #000;
+}
+
+#span {
+    color: red;
+}
+
+#terminal {
+    width: 100%;
+    height: 100%;
+    font-family: monospace;
+    background: #000;
+    color: #fff;
+}
+
+.center {
+    text-align: center;
+}
+
+#canvas {
+    position: fixed;
+    display: none;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: none;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.command {
+    width: 100%;
+    display: table;
+}
+
+.prompt {
+    color: #96b38a;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    display: table-cell;
+    width: 10%;
+    white-space: nowrap;
+}
+
+.commandInput {
+    background: #000;
+    color: #fff;
+    border: none;
+    resize: none;
+    margin: 0;
+    outline: 0;
+    width: 100%;
+    display: table-cell;
+    font-family: monospace;
+    color: #606060;
+}
+
+.output pre {
+    font-family: monospace;
+    white-space: pre-wrap;       /* Since CSS 2.1 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+    display: inline;
+}
+
+a {
+    color: #0f0;
+}
+
+.spinner {
+  color: white;
+  min-height: 100vh;
+  display: inline;
+}
+
+.spinner:after {
+  animation: changeSpinner 1s linear 2;
+  content: "⠋";
+}
+
+@keyframes changeSpinner {
+  10% { content: "⠙"; }
+  20% { content: "⠹"; }
+  30% { content: "⠸"; }
+  40% { content: "⠼"; }
+  50% { content: "⠴"; }
+  60% { content: "⠦"; }
+  70% { content: "⠧"; }
+  80% { content: "⠇"; }
+  90% { content: "⠏"; }
+}
+        </style>
+    </head>
+    <body id="body">
+    <div id="stuff">
+        <div id="terminal">
+            <div id="head">
+<pre class="center"> +-+-+-+ +-+-+-+-+-+-+-+-+
+ |S|p|y| |T|e|r|m|i|n|a|l|
+ +-+-+-+ +-+-+-+-+-+-+-+-+</pre>                
+                <pre>Spy Terminal by M N (I just <span id="span">modified</span> it)
+                    <br />Type help or list to see list of supported commands
+                </pre>
+            </div>
+        </div>
+        <canvas id="canvas" tabindex='1'></canvas>
+        </div>
+        <script>
+            // Created by 🇮🇷 M N
+
+var terminal;
+
+window.onload = function()
+{
+    terminal = document.getElementById("terminal");
+    
+    addInput();
+}
+
+
+function addInput()
+{
+    var commandInputs = document.getElementsByTagName("input");
+    if (commandInputs.length > 0)
+        commandInputs[commandInputs.length - 1].disabled = true;
+    
+    terminal.insertAdjacentHTML('beforeend', '<div class="command">'
+        + '<span class="prompt">[SpyTerminal] $>&nbsp;</span>'
+        + '<input type="text" class="commandInput" maxlength="40" autocorrect="off" autocapitalize="none"/>'
+        + '</div>');
+        
+    commandInputs = document.getElementsByTagName("input");
+    var commandInput = commandInputs[commandInputs.length - 1];
+    commandInput.focus();
+    
+    commandInput.addEventListener('keypress', function keypress(evt)
+    {
+        if (evt.keyCode === 13)
+        {
+            removeEventListener('keypress', keypress);
+            var res = doCommand(this.value);
+            addOutput(res['output']);
+            if (res['addInput'])
+                addInput();
+        }
+    }, false);
+}
+
+function addOutput(output)
+{
+    terminal.insertAdjacentHTML('beforeend', '<div class="output">'
+        + output
+        + '</div>');
+    var divs = document.getElementsByTagName("pre");
+    if (divs.length > 0)
+        divs[divs.length - 1].scrollIntoView(false);
+}
+var command = command;
+function doCommand(command)
+{
+    if (command == "help" || command == "list")
+        return help();
+    else if (command == "engage")
+        return engage();
+    else if (command == "connect")
+        return connect();
+    else if (command == "datetime")
+        return datetime();
+    else if (command == "echo" || command.startsWith("echo "))
+        return echo(command);
+    else if (command == "clear")
+        return clear();
+    else if (command == "matrix")
+        return matrix();
+    else if (command == "history")
+        return history();
+    else if (command == "whoami")
+        return whoami();
+    else if (command == "spy")
+        return spy();
+    else if (command == "hack interface")
+        return hack();
+
+    return {'output': "Command not found", 'addInput': true};
+}
+
+function hack() {
+    var int;
+    
+    var progress = 0;
+    
+    var fillChars = ["=", "▓", "=", "▮", "■"];
+    var emptyChars = [" ", "░", ".", "▯", "□"];
+    var rand = Math.floor(Math.random() * fillChars.length);
+    
+    function drawProgress()
+    {
+        var preOutputs = document.getElementsByTagName("pre");
+        var preOutput = preOutputs[preOutputs.length - 1];
+        
+        ++progress;
+        
+        preOutput.innerHTML = " Hacking [";
+        
+        
+        for (var i = 0; i < progress; ++i)
+            preOutput.innerHTML += fillChars[rand];
+        for (var i = progress; i < 100; ++i)
+            preOutput.innerHTML += emptyChars[rand];
+        preOutput.innerHTML += "] " + (progress * 1) + "%";
+
+        if (progress == 100)
+        {
+            preOutput.innerHTML += "<br />You have hacked an interface. Up-top! *sigh* (I meant high-five, not go to the roof. You need some catching up to do.)<br />Details about interface:<br />User: Darcy Margolo<br />Age: 17<br />Hobby: Hacking<br />Other info: Mastermind hacker, stopped multiple interfaces from hacking her, but still can't stop us<br />This is all we could get before she found \"something odd\".";
+            
+            clearInterval(int);
+            
+            addInput();
+        }
+    }
+    
+    int = setInterval(drawProgress, 100);
+    
+    return {'output': '<span class="spinner"></span><pre> Connecting</pre>', 'addInput': false};
+}
+
+function help()
+{
+    return {'output': "<pre>Commands list: help, list, engage, connect, datetime, echo, clear, matrix, history, whoami, spy, hack interface</pre>", 'addInput': true};
+}
+
+function spy() {
+    var int;
+    
+    var progress = 0;
+    
+    var fillChars = ["=", "▓", "=", "▮", "■"];
+    var emptyChars = [" ", "░", ".", "▯", "□"];
+    var rand = Math.floor(Math.random() * fillChars.length);
+    
+    function drawProgress()
+    {
+        var preOutputs = document.getElementsByTagName("pre");
+        var preOutput = preOutputs[preOutputs.length - 1];
+        
+        ++progress;
+        
+        preOutput.innerHTML = " Spying [";
+        
+        
+        for (var i = 0; i < progress; ++i)
+            preOutput.innerHTML += fillChars[rand];
+        for (var i = progress; i < 100; ++i)
+            preOutput.innerHTML += emptyChars[rand];
+        preOutput.innerHTML += "] " + (progress * 1) + "%";
+
+        if (progress == 100)
+        {
+            preOutput.innerHTML += "<br>Successfully spied on people. Here is your gathered information.<br>HANK FLOREN: 6 years old, spoiled, picks his nose and puts it on people.<br>FIONA GATHERNS: 12 years old, stays on multiple electronics each day.<br>That is it for today.";
+            
+            clearInterval(int);
+            
+            addInput();
+        }
+    }
+    
+    int = setInterval(drawProgress, 100);
+    
+    return {'output': '<span class="spinner"></span><pre> Connecting</pre>', 'addInput': false};
+}
+
+function engage()
+{
+    terminal.style.display = 'none';
+    var c = document.getElementById("canvas");
+    c.style.display = 'block';
+    var ctx = c.getContext("2d");
+
+    c.height = window.innerHeight;
+    c.width = window.innerWidth;
+    
+    //chinese characters - taken from the unicode charset
+    var chinese = "田由甲申甴电甶男甸甹町画甼甽甾甿畀畁畂畃畄畅畆畇畈畉畊畋界畍畎畏畐畑";
+    //converting the string into an array of single characters
+    chinese = chinese.split("");
+    
+    var font_size = 10;
+    var columns = c.width/font_size; //number of columns for the rain
+    //an array of drops - one per column
+    var drops = [];
+    //x below is the x coordinate
+    //1 = y co-ordinate of the drop(same for every drop initially)
+    for(var x = 0; x < columns; x++)
+        drops[x] = 1; 
+    
+    //drawing the characters
+    function draw()
+    {
+        //Black BG for the canvas
+        //translucent BG to show trail
+        ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+        ctx.fillRect(0, 0, c.width, c.height);
+        
+        ctx.fillStyle = "#0F0"; //green text
+        ctx.font = font_size + "px arial";
+        //looping over drops
+        for(var i = 0; i < drops.length; i++)
+        {
+            //a random chinese character to print
+            var text = chinese[Math.floor(Math.random()*chinese.length)];
+            //x = i*font_size, y = value of drops[i]*font_size
+            ctx.fillText(text, i*font_size, drops[i]*font_size);
+            
+            //sending the drop back to the top randomly after it has crossed the screen
+            //adding a randomness to the reset to make the drops scattered on the Y axis
+            if(drops[i]*font_size > c.height && Math.random() > 0.975)
+                drops[i] = 0;
+            
+            //incrementing Y coordinate
+            drops[i]++;
+        }
+    }
+    
+    var int = setInterval(draw, 33);
+    
+    c.focus();
+    
+    function keypress(evt)
+    {
+        c.removeEventListener('keypress', keypress, true);
+        c.removeEventListener('click', click, true);
+        
+        clearInterval(int);
+        
+        c.style.display = "none";
+        
+        terminal.style.display = "block";
+        
+        addInput();
+    }
+    function click(evt)
+    {
+        c.removeEventListener('keypress', keypress, true);
+        c.removeEventListener('click', click, true);
+        
+        clearInterval(int);
+        
+        c.style.display = "none";
+        
+        terminal.style.display = "block";
+        
+        addInput();
+    }
+    
+    c.addEventListener('keypress', keypress, true);
+    
+    c.addEventListener('click', click, true);
+    
+    return {'output': "<pre>Matrix animation from https://codepen.io/P3R0/pen/MwgoKv</pre>", 'addInput': false};
+}
+
+function matrix()
+{
+    terminal.style.display = 'none';
+    var c = document.getElementById("canvas");
+    c.style.display = 'block';
+    var ctx = c.getContext("2d");
+
+    //making the canvas full screen
+    c.height = window.innerHeight;
+    c.width = window.innerWidth;
+
+    //chinese characters - taken from the unicode charset
+    var matr = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%+-/~{[|`]}";
+    //converting the string into an array of single characters
+    matr = matr.split("");
+
+    var font_size = 10;
+    var columns = c.width/font_size; //number of columns for the rain
+    //an array of drops - one per column
+    var drops = [];
+    //x below is the x coordinate
+    //1 = y co-ordinate of the drop(same for every drop initially)
+    for(var x = 0; x < columns; x++)
+        drops[x] = 1; 
+
+    //drawing the characters
+    function draw()
+    {
+        //Black BG for the canvas
+        //translucent BG to show trail
+        ctx.fillStyle = "rgba(0, 0, 0, 0.04)";
+        ctx.fillRect(0, 0, c.width, c.height);
+
+        ctx.fillStyle = "#f4427d";//green text
+        ctx.font = font_size + "px arial";
+        //looping over drops
+        for(var i = 0; i < drops.length; i++)
+        {
+            //a random chinese character to print
+            var text = matr[Math.floor(Math.random()*matr.length)];
+            //x = i*font_size, y = value of drops[i]*font_size
+            ctx.fillText(text, i*font_size, drops[i]*font_size);
+
+            //sending the drop back to the top randomly after it has crossed the screen
+            //adding a randomness to the reset to make the drops scattered on the Y axis
+            if(drops[i]*font_size > c.height && Math.random() > 0.975)
+                drops[i] = 0;
+
+            //incrementing Y coordinate
+            drops[i]++;
+        }
+    }
+
+    var int = setInterval(draw, 33);
+    
+    c.focus();
+    
+    function keypress(evt)
+    {
+        c.removeEventListener('keypress', keypress, true);
+        c.removeEventListener('click', click, true);
+        
+        clearInterval(int);
+        
+        c.style.display = "none";
+        
+        terminal.style.display = "block";
+        
+        addInput();
+    }
+    function click(evt)
+    {
+        c.removeEventListener('keypress', keypress, true);
+        c.removeEventListener('click', click, true);
+        
+        clearInterval(int);
+        
+        c.style.display = "none";
+        
+        terminal.style.display = "block";
+        
+        addInput();
+    }
+    
+    c.addEventListener('keypress', keypress, true);
+    
+    c.addEventListener('click', click, true);
+    
+    return {'output': "<pre>Matrix animation from https://codepen.io/AchrafBoujjou/pen/RxjWXB</pre>", 'addInput': false};
+}
+
+
+function connect()
+{
+    var int;
+    
+    var progress = 0;
+    
+    var fillChars = ["=", "▓", "=", "▮", "■"];
+    var emptyChars = [" ", "░", ".", "▯", "□"];
+    var rand = Math.floor(Math.random() * fillChars.length);
+    
+    function drawProgress()
+    {
+        var preOutputs = document.getElementsByTagName("pre");
+        var preOutput = preOutputs[preOutputs.length - 1];
+        
+        ++progress;
+        
+        preOutput.innerHTML = " Connnecting [";
+        
+        
+        for (var i = 0; i < progress; ++i)
+            preOutput.innerHTML += fillChars[rand];
+        for (var i = progress; i < 20; ++i)
+            preOutput.innerHTML += emptyChars[rand];
+        preOutput.innerHTML += "] " + (progress * 5) + "%";
+
+        if (progress == 20)
+        {
+            preOutput.innerHTML += "<br /><br />Successfully connected. You are now in the Spy Club database. I am the boss. Cross me, and all your files will be replaced with infinite HACKS!";
+            
+            clearInterval(int);
+            
+            addInput();
+        }
+    }
+    
+    int = setInterval(drawProgress, 100);
+    
+    return {'output': '<span class="spinner"></span><pre> Connecting</pre>', 'addInput': false};
+}
+function datetime()
+{
+    var d = new Date();
+    return {'output': "<pre>" + d.toString() + "</pre><br />\"Time can be your enemy or friend. To be a good spy, always keep track of time.\"<br />~Brandon", 'addInput': true};
+    //return {'output': "<br />\"Time can be your enemy or friend. To be a good spy, always keep track of time.\"<br />~Brandon", 'addInput', true};
+}
+
+function echo(command)
+{
+    var i = command.indexOf(" ");
+    if (i > 0)
+        return {'output': "<pre>" + command.substr(i + 1) + "</pre>", 'addInput': true};
+    else
+        return {'output': "<pre>echo [string]</pre>", 'addInput': true};
+}
+
+function clear()
+{
+    terminal.innerHTML = "";
+    return {'output': "", 'addInput': true};
+}
+
+function history()
+{
+    return {'output': "<pre>"
+        + "V 1.5 commands = [spy, modifications to some others]<br />"
+        + "V 1.4 commands = [history, whoami]<br />"
+        + "V 1.2 commands = [clear, matrix]<br />"
+        + "V 1.0 commands = [help, list, engage, connect, datetime, echo]"
+        + "</pre>"
+        , 'addInput': true};
+}
+
+function whoami()
+{
+    return {'output': "<pre>"
++"__/\\\\\\\\____________/\\\\\\\\____________/\\\\\\\\\\_____/\\\\\\_        <br/>"
++" _\\/\\\\\\\\\\\\________/\\\\\\\\\\\\___________\\/\\\\\\\\\\\\___\\/\\\\\\_       <br/>"
++"  _\\/\\\\\\//\\\\\\____/\\\\\\//\\\\\\___________\\/\\\\\\/\\\\\\__\\/\\\\\\_      <br/>"
++"   _\\/\\\\\\\\///\\\\\\/\\\\\\/_\\/\\\\\\___________\\/\\\\\\//\\\\\\_\\/\\\\\\_     <br/>"
++"    _\\/\\\\\\__\\///\\\\\\/___\\/\\\\\\___________\\/\\\\\\\\//\\\\\\\\/\\\\\\_    <br/>"
++"     _\\/\\\\\\____\\///_____\\/\\\\\\___________\\/\\\\\\_\\//\\\\\\/\\\\\\_   <br/>"
++"      _\\/\\\\\\_____________\\/\\\\\\___________\\/\\\\\\__\\//\\\\\\\\\\\\_  <br/>"
++"       _\\/\\\\\\_____________\\/\\\\\\___________\\/\\\\\\___\\//\\\\\\\\\\_ <br/>"
++"        _\\///______________\\///____________\\///_____\\/////__<br/>"
++"</pre>"
+        , 'addInput': true};
+}
+        </script>
+    </body>
+</html>
